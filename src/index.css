@@ -1,13 +1,150 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+:root {
+   --background: #ffffff;
+   --font-primary: #000004;
+   --font-secondary: #999999;
+   --highlight: #aec6f1;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+[data-theme="dark"] {
+   --background: #111111;
+   --font-primary: #fefefe;
+   --font-secondary: #eaeaea;
+   --highlight: #ffebeb;
+}
+
+[data-theme="marina"] {
+   --background: #103b52;
+   --font-primary: #4a6fb5;
+   --font-secondary: #50688c;
+   --highlight: #9393a7;
+}
+
+[data-theme="paper"] {
+   --background: #fafafa;
+   --font-primary: #444444;
+   --font-secondary: #b2b2b2;
+   --highlight: #fff9dd;
+}
+
+[data-theme="blueberry"] {
+   --background: #f4f3ff;
+   --font-primary: #506477;
+   --font-secondary: #678198;
+   --highlight: #92a4be;
+}
+
+[data-theme="shadow"] {
+   --background: #130000;
+   --font-primary: #eeeeee;
+   --font-secondary: #f8f8f8;
+   --highlight: #fffdef;
+}
+
+body {
+   margin: 0;
+   padding: 0;
+   font-family: "Oxygen Mono", sans-serif;
+   box-sizing: border-box;
+   background-color: var(--background);
+   color: var(--font-primary);
+}
+
+h2 {
+   color: var(--font-secondary);
+}
+
+.highlight {
+   color: var(--highlight);
+}
+
+#editor .ql-font span[data-label="Oxygen Mono"]::before {
+   font-family: "Oxygen Mono";
+}
+
+#editor .ql-font span[data-label="Oxygen"]::before {
+   font-family: "Oxygen";
+}
+
+#editor .ql-font span[data-label="Lexend"]::before {
+   font-family: "Lexend";
+}
+
+#editor .ql-font span[data-label="Newsreader"]::before {
+   font-family: "Newsreader";
+}
+
+#editor .ql-font span[data-label="Poppins"]::before {
+   font-family: "Poppins";
+}
+
+#editor .ql-font span[data-label="Electrolize"]::before {
+   font-family: "Electrolize";
+}
+
+#editor .ql-font span[data-label="Nunito Sans"]::before {
+   font-family: "Nunito Sans";
+}
+
+.ql-font-oxygenmono {
+   font-family: "Oxygen Mono";
+}
+.ql-font-oxygen {
+   font-family: "Oxygen";
+}
+.ql-font-lexend {
+   font-family: "Lexend";
+}
+.ql-font-newsreader {
+   font-family: "Newsreader";
+}
+.ql-font-poppins {
+   font-family: "Poppins";
+}
+.ql-font-electrolize {
+   font-family: "Electrolize";
+}
+.ql-font-nunitosans {
+   font-family: "Nunito Sans";
+}
+
+.Main {
+   max-width: 60vw;
+   display: flex;
+   flex-direction: column;
+   margin: 0 auto;
+}
+
+.stats {
+   position: fixed;
+   bottom: 0;
+   font-size: 0.8rem;
+   padding: 4px 16px;
+   left: 80vw;
+}
+
+#editor {
+   border: none;
+   padding: 10px 16px;
+   font-size: 1.2rem;
+}
+
+.ql-blank {
+   padding: 12px 15px;
+}
+
+.ql-toolbar {
+   border: none !important;
+   padding-left: 16px;
+   height: 40px;
+}
+
+.ql-editor h1 {
+   font-size: 2.5rem;
+   padding-top: 25px;
+   padding-bottom: 10px;
+   padding-left: 16px;
+}
+
+.ql-editor {
+   padding: 0;
 }
