@@ -63,36 +63,33 @@ export default function TextInpput({
          ];
          Quill.register(FontAttributor, true);
 
-         const toolbar = document.querySelector(".ql-toolbar");
-         if (toolbar) {
-            const fontPickerLabel = toolbar.querySelector(
-               ".ql-font .ql-picker-label"
-            );
-            const fontPickerOptions = toolbar.querySelectorAll(
-               ".ql-font .ql-picker-options span"
-            );
+         // const toolbar = document.querySelector(".ql-toolbar");
+         // if (toolbar) {
+         //    const fontPickerOptions = toolbar.querySelectorAll(
+         //       ".ql-font .ql-picker-item"
+         //    );
+         //    const fontPickerLabel = toolbar.querySelector(
+         //       ".ql-font .ql-picker-label"
+         //    );
 
-            fontPickerOptions.forEach((option, index) => {
-               option.style.fontFamily = FontAttributor.whitelist[
-                  index
-               ].replace("-", " ");
-               option.textContent = FontAttributor.whitelist[index].replace(
-                  "-",
-                  " "
-               );
-            });
+         //    fontPickerOptions.forEach((option) => {
+         //       const fontName = option.getAttribute("data-value");
+         //       option.style.fontFamily = fontName.replace("-", " ");
+         //       option.textContent = fontName
+         //          .replace("-", " ")
+         //          .replace(/([a-z])([A-Z])/g, "$1 $2");
+         //    });
 
-            // Update selected font's style dynamically
-            toolbar.querySelector(".ql-font").addEventListener("click", (e) => {
-               const selectedFont = fontPickerLabel.getAttribute("data-value");
-               if (selectedFont) {
-                  fontPickerLabel.style.fontFamily = selectedFont.replace(
-                     "-",
-                     " "
-                  );
-               }
-            });
-         }
+         //    toolbar.querySelector(".ql-font").addEventListener("click", () => {
+         //       const selectedFont = fontPickerLabel.getAttribute("data-value");
+         //       if (selectedFont) {
+         //          fontPickerLabel.style.fontFamily = selectedFont.replace(
+         //             "-",
+         //             " "
+         //          );
+         //       }
+         //    });
+         // }
 
          // prevent multi-renders
          quillRef.current = quill;
