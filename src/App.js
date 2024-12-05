@@ -9,13 +9,15 @@ export default function App() {
    const [characterCount, setCharacterCount] = useState(0);
 
    return (
-      <div className="Main">
-         <Title />
-         <TextInput
-            handleSetCharacterCount={setCharacterCount}
-            handleSetTextContent={setTextContent}
-         />
+      <>
+         <div className="Main">
+            <Title />
+            <TextInput
+               handleSetCharacterCount={setCharacterCount}
+               handleSetTextContent={setTextContent}
+            />
+         </div>
          <Stats textContent={textContent} characterCount={characterCount} />
-      </div>
+      </>
    );
 }

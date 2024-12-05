@@ -43,18 +43,21 @@
 body {
    margin: 0;
    padding: 0;
-   font-family: "Oxygen Mono", sans-serif;
+   /* font-family: "Oxygen Mono", sans-serif; */
    box-sizing: border-box;
-   background-color: var(--background);
-   color: var(--font-primary);
+}
+
+h1,
+.ql-editor {
+   letter-spacing: 0.05rem;
+}
+
+::selection {
+   background: var(--highlight);
 }
 
 h2 {
-   color: var(--font-secondary);
-}
-
-.highlight {
-   color: var(--highlight);
+   color: var(--font-primary);
 }
 
 .ql-snow .ql-picker-options .ql-picker-item::before {
@@ -62,7 +65,7 @@ h2 {
 }
 
 .ql-snow .ql-picker.ql-font .ql-picker-label::before {
-   content: attr(data-value);
+   content: attr(data-value) !important;
 }
 
 .ql-font-oxygenmono {
@@ -93,7 +96,7 @@ h2 {
 }
 
 .Main {
-   max-width: 60vw;
+   max-width: 50vw;
    display: flex;
    flex-direction: column;
    margin: 0 auto;
@@ -102,15 +105,32 @@ h2 {
 .stats {
    position: fixed;
    bottom: 0;
-   font-size: 0.8rem;
-   padding: 4px 16px;
-   left: 80vw;
+   font-size: 1rem;
+   left: 75vw;
+   margin-bottom: 10px;
+   border-radius: 12px;
+   background-color: #ffffff;
+   border: 1px #fafafa solid;
+   min-width: 120px;
+}
+
+.stats select {
+   color: #333;
+   background-color: #f9f9f9;
+   border: 1px solid #ccc;
+   border-radius: 12px;
+   padding: 15px;
+   padding-right: 30px; 
+
+   -webkit-box-shadow: rgba(151, 198, 243, 0.3) 0 1px 5px;
+   -moz-box-shadow:rgba(151, 198, 243, 0.3) 0 1px 5px;
+   box-shadow: rgba(151, 198, 243, 0.3) 0 1px 5px;
 }
 
 #editor {
    border: none;
    padding: 10px 16px;
-   font-size: 1.2rem;
+   font-size: 1rem;
 }
 
 .ql-blank {
@@ -127,19 +147,19 @@ h2 {
    flex-direction: row;
 }
 
-
-
 .ql-snow .ql-formats button {
    height: 30px !important;
    margin-right: 8px !important;
 }
 
 .ql-snow .ql-picker-label::before {
+   position: absolute;
+   transform: translateY(+7%);
    height: 30px !important;
    display: flex !important;
    flex-direction: column !important;
-   justify-content: center;
-   align-items: center;
+   font-size: 1rem !important;
+   margin-right: 8px !important;
 }
 
 svg {
@@ -149,6 +169,7 @@ svg {
 
 .ql-editor h1 {
    font-size: 2.5rem;
+   color: var(--font-primary);
    padding-top: 25px;
    padding-bottom: 10px;
    padding-left: 16px;
