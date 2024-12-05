@@ -63,34 +63,6 @@ export default function TextInpput({
          ];
          Quill.register(FontAttributor, true);
 
-         // const toolbar = document.querySelector(".ql-toolbar");
-         // if (toolbar) {
-         //    const fontPickerOptions = toolbar.querySelectorAll(
-         //       ".ql-font .ql-picker-item"
-         //    );
-         //    const fontPickerLabel = toolbar.querySelector(
-         //       ".ql-font .ql-picker-label"
-         //    );
-
-         //    fontPickerOptions.forEach((option) => {
-         //       const fontName = option.getAttribute("data-value");
-         //       option.style.fontFamily = fontName.replace("-", " ");
-         //       option.textContent = fontName
-         //          .replace("-", " ")
-         //          .replace(/([a-z])([A-Z])/g, "$1 $2");
-         //    });
-
-         //    toolbar.querySelector(".ql-font").addEventListener("click", () => {
-         //       const selectedFont = fontPickerLabel.getAttribute("data-value");
-         //       if (selectedFont) {
-         //          fontPickerLabel.style.fontFamily = selectedFont.replace(
-         //             "-",
-         //             " "
-         //          );
-         //       }
-         //    });
-         // }
-
          // prevent multi-renders
          quillRef.current = quill;
          isInitialized.current = true;

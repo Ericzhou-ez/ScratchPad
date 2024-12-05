@@ -58,11 +58,11 @@ h2 {
 }
 
 .ql-snow .ql-picker-options .ql-picker-item::before {
-  content: attr(data-value) !important;
+   content: attr(data-value) !important;
 }
 
 .ql-snow .ql-picker.ql-font .ql-picker-label::before {
-  content: attr(data-value); 
+   content: attr(data-value);
 }
 
 .ql-font-oxygenmono {
@@ -89,7 +89,7 @@ h2 {
 
 .ql-snow .ql-picker .ql-font .ql-picker-label::before,
 .ql-snow .ql-picker .ql-font .ql-picker-item::before {
-  content: attr(data-value); /* Show the font name */
+   content: attr(data-value); /* Show the font name */
 }
 
 .Main {
@@ -120,7 +120,31 @@ h2 {
 .ql-toolbar {
    border: none !important;
    padding-left: 16px;
-   height: 40px;
+   min-height: 50px;
+   height: 100%;
+   flex: 1;
+   display: flex;
+   flex-direction: row;
+}
+
+
+
+.ql-snow .ql-formats button {
+   height: 30px !important;
+   margin-right: 8px !important;
+}
+
+.ql-snow .ql-picker-label::before {
+   height: 30px !important;
+   display: flex !important;
+   flex-direction: column !important;
+   justify-content: center;
+   align-items: center;
+}
+
+svg {
+   height: 20px !important;
+   margin-right: 25px !important;
 }
 
 .ql-editor h1 {
@@ -132,4 +156,8 @@ h2 {
 
 .ql-editor {
    padding: 0;
+}
+
+.ql-snow .ql-picker:not(.ql-color-picker):not(.ql-icon-picker) svg {
+   display: none;
 }
