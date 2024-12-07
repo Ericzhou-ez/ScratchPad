@@ -1,6 +1,7 @@
 import React from "react";
 import Title from "./Title.js";
 import TextInput from "./TextInput.js";
+import { Themes, ThemeHoverBtns } from "./themes.js";
 import Stats from "./Stats.js";
 import { useState } from "react";
 
@@ -17,7 +18,11 @@ export default function App() {
                handleSetTextContent={setTextContent}
             />
          </div>
-         <Stats textContent={textContent} characterCount={characterCount} />
+         <div className="side">
+            <Stats textContent={textContent} characterCount={characterCount} />
+            <Themes />
+         </div>
+         <ThemeHoverBtns />
       </>
    );
 }

@@ -45,7 +45,6 @@ export default function TextInpput({
          // new quill editor
          const quill = new Quill("#editor", {
             theme: "snow",
-            placeholder: "Note...",
             modules: {
                toolbar: toolbarOptions,
             },
