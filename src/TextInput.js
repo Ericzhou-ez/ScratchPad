@@ -1,5 +1,4 @@
-import React from "react";
-import { useState, useLayoutEffect, useRef } from "react";
+import React, { useState, useLayoutEffect, useRef, useCallback } from "react";
 import Quill from "quill";
 
 export default function TextInpput({
@@ -13,40 +12,46 @@ export default function TextInpput({
       () => JSON.parse(localStorage.getItem("textContent")) || ""
    );
 
-   // configuring the toolbar
-   const toolbarOptions = [
-      [
-         {
-            font: [
-               "oxygenmono",
-               "oxygen",
-               "lexend",
-               "newsreader",
-               "poppins",
-               "electrolize",
-               "nunitosans",
-            ],
-         },
+   // Toolbar configuration
+   const toolbarOptions = React.useMemo(
+      () => [
+         [
+            {
+               font: [
+                  "oxygenmono",
+                  "oxygen",
+                  "lexend",
+                  "newsreader",
+                  "poppins",
+                  "electrolize",
+                  "nunitosans",
+               ],
+            },
+         ],
+         ["bold", "italic", "underline"],
+         [{ header: 2 }, { header: 3 }],
+         [{ list: "ordered" }, { list: "bullet" }, { list: "check" }],
       ],
-      ["bold", "italic", "underline"],
-      [{ header: 2 }, { header: 3 }],
-      [{ list: "ordered" }, { list: "bullet" }, { list: "check" }],
-   ];
+      []
+   );
 
-   const extractWords = (ele) => {
-      if (!ele) return;
-      const text = ele.innerText || "";
-      const cleanedText = text.replace(/\n/g, "");
-      const words = cleanedText.split(/\s+/).filter(Boolean).length;
-      const characters = cleanedText.split("").length;
-      handleSetTextContent(words);
-      handleSetCharacterCount(characters);
-   };
+   // Extract word and character counts
+   const extractWords = useCallback(
+      (ele) => {
+         if (!ele) return;
+         const text = ele.innerText || "";
+         const cleanedText = text.replace(/\n/g, "");
+         const words = cleanedText.split(/\s+/).filter(Boolean).length;
+         const characters = cleanedText.split("").length;
+         handleSetTextContent(words);
+         handleSetCharacterCount(characters);
+      },
+      [handleSetCharacterCount, handleSetTextContent]
+   );
 
    useLayoutEffect(() => {
-      // quill is only initialized once
       if (!quillRef.current && !isInitialized.current) {
-         // new quill editor
+         // Initialize Quill editor
          const quill = new Quill("#editor", {
             theme: "snow",
             modules: {
@@ -54,12 +59,13 @@ export default function TextInpput({
             },
          });
 
-         // prevent multi-renders
          quillRef.current = quill;
          isInitialized.current = true;
 
+         // Set the initial content
          quill.root.innerHTML = textContent;
 
+         // Register fonts
          const FontAttributor = Quill.import("attributors/class/font");
          FontAttributor.whitelist = [
             "oxygenmono",
@@ -72,11 +78,11 @@ export default function TextInpput({
          ];
          Quill.register(FontAttributor, true);
 
+         // Add mutation observer to track changes in content
          const editorContent = document.querySelector(".ql-editor");
          observerRef.current = new MutationObserver(() => {
             const text = editorContent.innerText.trim(); // Extract text
             setTextContent(text);
-            
             localStorage.setItem("textContent", JSON.stringify(text));
          });
 
@@ -86,7 +92,7 @@ export default function TextInpput({
             characterData: true,
          });
 
-         // get char and word counts
+         // Update word and character counts
          const editorElement = document.getElementById("editor");
          const observer = new MutationObserver(() => {
             extractWords(editorElement);
@@ -105,7 +111,7 @@ export default function TextInpput({
             isInitialized.current = false;
          }
       };
-   }, []);
+   }, [toolbarOptions, textContent, extractWords]);
 
-   return <div id="editor" style={{ minHeight: "80vh" }}></div>
+   return <div id="editor" style={{ minHeight: "80vh" }}></div>;
 }
