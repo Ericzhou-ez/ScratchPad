@@ -1,7 +1,6 @@
 import React from "react";
-import { useState, useLayoutEffect, useRef, useEffect } from "react";
+import { useState, useLayoutEffect, useRef } from "react";
 import Quill from "quill";
-import { keyboard } from "@testing-library/user-event/dist/keyboard";
 
 export default function TextInpput({
    handleSetCharacterCount,
