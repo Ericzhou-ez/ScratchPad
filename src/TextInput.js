@@ -1,13 +1,18 @@
 import React from "react";
-import { useState, useLayoutEffect, useRef } from "react";
+import { useState, useLayoutEffect, useRef, useEffect } from "react";
 import Quill from "quill";
+import { keyboard } from "@testing-library/user-event/dist/keyboard";
 
 export default function TextInpput({
    handleSetCharacterCount,
    handleSetTextContent,
 }) {
    const quillRef = useRef(null);
+   const observerRef = useRef(null);
    const isInitialized = useRef(false);
+   const [textContent, setTextContent] = useState(
+      () => JSON.parse(localStorage.getItem("textContent")) || ""
+   );
 
    // configuring the toolbar
    const toolbarOptions = [
@@ -50,6 +55,12 @@ export default function TextInpput({
             },
          });
 
+         // prevent multi-renders
+         quillRef.current = quill;
+         isInitialized.current = true;
+
+         quill.root.innerHTML = textContent;
+
          const FontAttributor = Quill.import("attributors/class/font");
          FontAttributor.whitelist = [
             "oxygenmono",
@@ -62,9 +73,19 @@ export default function TextInpput({
          ];
          Quill.register(FontAttributor, true);
 
-         // prevent multi-renders
-         quillRef.current = quill;
-         isInitialized.current = true;
+         const editorContent = document.querySelector(".ql-editor");
+         observerRef.current = new MutationObserver(() => {
+            const text = editorContent.innerText.trim(); // Extract text
+            setTextContent(text);
+            
+            localStorage.setItem("textContent", JSON.stringify(text));
+         });
+
+         observerRef.current.observe(editorContent, {
+            childList: true,
+            subtree: true,
+            characterData: true,
+         });
 
          // get char and word counts
          const editorElement = document.getElementById("editor");
@@ -87,5 +108,5 @@ export default function TextInpput({
       };
    }, []);
 
-   return <div id="editor"></div>;
+   return <div id="editor" style={{ minHeight: "80vh" }}></div>
 }

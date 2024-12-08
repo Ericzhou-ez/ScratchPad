@@ -56,7 +56,9 @@ export function ThemeHoverBtns() {
       },
    ];
 
-   const [selectedTheme, setSelectedTheme] = useState(themes[0]);
+   const [selectedTheme, setSelectedTheme] = useState(
+      () => JSON.parse(localStorage.getItem("selectedTheme")) || themes[0]
+   );
 
    function renderThemeSelecion(e) {
       e.preventDefault();
@@ -68,7 +70,9 @@ export function ThemeHoverBtns() {
 
    useEffect(() => {
       document.body.setAttribute("data-theme", selectedTheme);
+      localStorage.setItem("selectedTheme", JSON.stringify(selectedTheme));
    }, [selectedTheme]);
+
 
    return (
       <div className="theme-selector--menu hidden">
