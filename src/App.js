@@ -3,6 +3,7 @@ import Title from "./components/Title.js";
 import TextInput from "./components/TextInput.js";
 import { Themes, ThemeHoverBtns } from "./components/themes.js";
 import Stats from "./components/Stats.js";
+import Sidebar from "./components/SideBar.js";
 
 export default function App() {
    const [textContent, setTextContent] = useState(0);
@@ -29,6 +30,7 @@ export default function App() {
 
    return (
       <>
+      <Sidebar />
          <div className="Main">
             <Title title={title} handleTitleChange={setTitle} />
             <TextInput

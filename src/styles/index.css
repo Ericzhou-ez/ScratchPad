@@ -314,3 +314,32 @@ svg {
    position: relative;
    display: inline-block;
 }
+
+.sidebar {
+  position: fixed;
+  top: 10vh;
+  left: 0;
+  height: 80vh;
+  width: 200px;
+  padding: 20px;
+  border-radius: 10px 12px;
+  background-color: var(--background-secondary);
+  backdrop-filter: blur(20px);
+  border: none;
+  color: var(--font-secondary);
+ 
+  -webkit-box-shadow: rgba(0, 0, 0, 0.3) 0 1px 3px;
+  -moz-box-shadow: rgba(0,0,0,0.3) 0 1px 3px;
+  box-shadow: rgba(0, 0, 0, 0.3) 0 1px 3px;
+  /* Start at 20% visible => translateX(-80%) (80% offscreen) */
+  transform: translateX(-80%);
+  transition: transform 0.4s ease-in-out;
+}
+.hover-zone {
+  position: fixed;
+  top: 10vh;
+  left: 0;
+  height: 80vh;
+  width: 100px; 
+  z-index: 10; 
+}
