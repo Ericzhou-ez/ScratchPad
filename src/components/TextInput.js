@@ -12,7 +12,6 @@ export default function TextInpput({
       () => JSON.parse(localStorage.getItem("textContent")) || ""
    );
 
-   // Toolbar configuration
    const toolbarOptions = React.useMemo(
       () => [
          [
@@ -35,7 +34,6 @@ export default function TextInpput({
       []
    );
 
-   // Extract word and character counts
    const extractWords = useCallback(
       (ele) => {
          if (!ele) return;
@@ -51,21 +49,19 @@ export default function TextInpput({
 
    useLayoutEffect(() => {
       if (!quillRef.current && !isInitialized.current) {
-         // Initialize Quill editor
          const quill = new Quill("#editor", {
             theme: "snow",
             modules: {
                toolbar: toolbarOptions,
             },
+            placeholder: "Note...", // Add placeholder
          });
 
          quillRef.current = quill;
          isInitialized.current = true;
 
-         // Set the initial content
          quill.root.innerHTML = textContent;
 
-         // Register fonts
          const FontAttributor = Quill.import("attributors/class/font");
          FontAttributor.whitelist = [
             "oxygenmono",
@@ -78,10 +74,9 @@ export default function TextInpput({
          ];
          Quill.register(FontAttributor, true);
 
-         // Add mutation observer to track changes in content
          const editorContent = document.querySelector(".ql-editor");
          observerRef.current = new MutationObserver(() => {
-            const text = editorContent.innerText.trim(); // Extract text
+            const text = editorContent.innerText.trim();
             setTextContent(text);
             localStorage.setItem("textContent", JSON.stringify(text));
          });
@@ -92,7 +87,6 @@ export default function TextInpput({
             characterData: true,
          });
 
-         // Update word and character counts
          const editorElement = document.getElementById("editor");
          const observer = new MutationObserver(() => {
             extractWords(editorElement);
@@ -103,6 +97,9 @@ export default function TextInpput({
             subtree: true,
             characterData: true,
          });
+
+         // Set focus on the editor
+         quill.focus();
       }
 
       return () => {
