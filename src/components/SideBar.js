@@ -133,9 +133,9 @@ function SidebarTitle({ lockSidebar, isSideBarLocked }) {
    );
 }
 
-function SidebarNotes() {
+// function SidebarNotes() {
 
-}
+// }
 
 function SidebarMisallaneous({ toggleSettings, togglePrivacyPolicy }) {
    return (
