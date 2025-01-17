@@ -1,8 +1,10 @@
 import { useState } from "react";
-import { auth } from "../configs/firebase";
+import { auth, googleAuth } from "../configs/firebase";
 import {
    createUserWithEmailAndPassword,
    signInWithEmailAndPassword,
+   signInWithPopup,
+   signOut
 } from "firebase/auth";
 
 export function AuthenticationPopUp() {
@@ -30,15 +32,23 @@ export function AuthenticationPopUp() {
             await signInWithEmailAndPassword(auth, email, password);
             console.log("User signed in successfully!");
          }
-         
+
       } catch (err) {
          setErrorMessage(err.message || "An unexpected error occurred.");
          console.error(err);
       }
    }
 
+   async function handleGoogleSignIn() {
+      try {
+         await signInWithPopup(auth, googleAuth);
+      } catch (err) {
+         console.error(err)
+      }
+   }
+
    return (
-      <div className="auth" onClick={(e) => e.stopPropagation()} >
+      <div className="auth" onClick={(e) => e.stopPropagation()}>
          <div>
             <h1>{isUserSigningUp ? "Create an Account" : "Welcome Back"}</h1>
 
@@ -87,7 +97,7 @@ export function AuthenticationPopUp() {
                <div className="light-grey-divider"></div>
             </div>
 
-            <button className="google-signin">
+            <button className="google-signin" onClick={handleGoogleSignIn}>
                <svg
                   className="w-5 h-5"
                   viewBox="0 0 48 48"
@@ -123,4 +133,12 @@ export function AuthenticationPopUp() {
          </div>
       </div>
    );
+}
+
+export async function logOut() {
+   try {
+      await signOut(auth);
+   } catch (e) {
+      console.error(e);
+   }
 }

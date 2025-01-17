@@ -1,11 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
 import { AuthenticationPopUp } from "./authentication";
+import { auth } from "../configs/firebase";
 import {
    ArrowLineRight,
    CaretDoubleLeft,
    SignIn,
    TextAlignCenter,
 } from "@phosphor-icons/react";
+import { logOut } from "./authentication";
 
 export default function Sidebar() {
    const sidebarRef = useRef(null);
@@ -151,10 +153,19 @@ function PrivacyPolicy({ onClick }) {
 }
 
 function SideBarLogin({ onClick }) {
+   const [signedIn, setSignedIn] = useState(false);
+
+   useEffect(() => {
+      const unsubscribe = auth.onAuthStateChanged((user) => {
+         setSignedIn(!!user);
+      });
+      return () => unsubscribe(); // Cleanup on unmount
+   }, []);
+
    return (
-      <div className="sideBarLogin" onClick={onClick}>
+      <div className="sideBarLogin" onClick={signedIn ? logOut : onClick}>
          <SignIn size={25} weight="fill" />
-         <p>Login</p>
+         <p>{signedIn ? "Sign Out" : "Login"}</p>
       </div>
    );
 }
