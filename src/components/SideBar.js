@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
+import { AuthenticationPopUp } from "./authentication";
 import {
    ArrowLineRight,
    CaretDoubleLeft,
-   Gear,
    SignIn,
    TextAlignCenter,
 } from "@phosphor-icons/react";
@@ -10,8 +10,8 @@ import {
 export default function Sidebar() {
    const sidebarRef = useRef(null);
    const [isSideBarLocked, setIsSideBarLocked ] = useState(false);
-   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
    const [isPrivacyPolicyOverlay, setIsPrivacyPolicyOverlay] = useState(false);
+   const [isAuthenticationPopUpOpen, setIsAuthenticationPopUpOpen] = useState(false);
 
    useEffect(() => {
       if (sidebarRef.current) {
@@ -50,12 +50,12 @@ export default function Sidebar() {
       }
    }
 
-   function toggleSettings() {
-      setIsSettingsOpen(!isSettingsOpen);
-   }
-
    function togglePrivacyPolicy() {
       setIsPrivacyPolicyOverlay(!isPrivacyPolicyOverlay);
+   }
+
+   function toggleAuthenticationPopUp() {
+      setIsAuthenticationPopUpOpen(!isAuthenticationPopUpOpen);
    }
 
    return (
@@ -84,25 +84,21 @@ export default function Sidebar() {
                <div className="divider"></div>
 
                <SidebarMisallaneous
-                  toggleSettings={toggleSettings}
                   togglePrivacyPolicy={togglePrivacyPolicy}
+                  toggleAuthenticationPopUp={toggleAuthenticationPopUp}
                />
             </div>
          </div>
 
-         {isSettingsOpen && (
-            <div className="modalOverlay" onClick={toggleSettings}>
-               
-                  <SettingsOverlay />
-               
+         {isAuthenticationPopUpOpen && (
+            <div className="modalOverlay-light" onClick={toggleAuthenticationPopUp}>
+               <AuthenticationPopUp />
             </div>
          )}
 
          {isPrivacyPolicyOverlay && (
             <div className="modalOverlay" onClick={togglePrivacyPolicy}>
-               
-                  <PrivacyPolicyOverlay />
-              
+               <PrivacyPolicyOverlay />
             </div>
          )}
       </>
@@ -133,26 +129,15 @@ function SidebarTitle({ lockSidebar, isSideBarLocked }) {
    );
 }
 
-// function SidebarNotes() {
-
-// }
-
-function SidebarMisallaneous({ toggleSettings, togglePrivacyPolicy }) {
+function SidebarMisallaneous({
+   toggleAuthenticationPopUp,
+   togglePrivacyPolicy,
+}) {
    return (
       <>
-         <Settings onClick={toggleSettings} />
          <PrivacyPolicy onClick={togglePrivacyPolicy} />
-         <SideBarLogin />
+         <SideBarLogin onClick={toggleAuthenticationPopUp} />
       </>
-   );
-}
-
-function Settings({ onClick }) {
-   return (
-      <div className="settings-button" role="button" onClick={onClick}>
-         <Gear size={25} weight="fill" />
-         <p>Settings</p>
-      </div>
    );
 }
 
@@ -165,21 +150,13 @@ function PrivacyPolicy({ onClick }) {
    );
 }
 
-function SideBarLogin() {
+function SideBarLogin({ onClick }) {
    return (
-      <div className="sideBarLogin">
+      <div className="sideBarLogin" onClick={onClick}>
          <SignIn size={25} weight="fill" />
          <p>Login</p>
       </div>
    );
-}
-
-function SettingsOverlay() {
-   return (
-      <div className="settings" onClick={(e) => e.stopPropagation()}>
-
-      </div>
-   )
 }
 
 function PrivacyPolicyOverlay() {
