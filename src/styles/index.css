@@ -62,6 +62,11 @@ body {
    margin: 0;
    padding: 0;
    box-sizing: border-box;
+   font-family: "oxygen", Helvetica, sans-serif;
+}
+
+img {
+   -webkit-user-drag: none;
 }
 
 #title {
@@ -332,6 +337,10 @@ svg {
    border: none;
    color: var(--font-secondary);
 
+   display: flex;
+   flex-direction: column;
+   justify-content: space-between;
+
    -webkit-box-shadow: var(--highlight) 0 1px 4px;
    -moz-box-shadow: var(--highlight) 0 1px 4px;
    box-shadow: var(--highlight) 0 1px 4px;
@@ -380,9 +389,29 @@ svg {
    left: 0;
    top: 0;
    height: 100vh;
-   margin-top: 0;
-   border-radius: 0;
    transition: all 0.3s ease-in-out;
+
+   background-color: var(--background-secondary);
+   backdrop-filter: blur(20px);
+   border: none;
+   color: var(--font-secondary);
+   padding: 0 10px;
+
+   display: flex;
+   flex-direction: column;
+   justify-content: space-between;
+
+   -webkit-box-shadow: var(--highlight) 0 1px 10px;
+   -moz-box-shadow: var(--highlight) 0 1px 10px;
+   box-shadow: var(--highlight) 0 1px 10px;
+
+   .sidebarTitle {
+      margin-top: 30px;
+   }
+
+   .user-profile {
+      margin-bottom: 30px;
+   }
 }
 
 .divider {
@@ -624,4 +653,22 @@ svg {
    text-align: center;
    margin-top: -10px;
    margin-bottom: 15px;
+}
+
+.user-profile {
+   display: flex;
+   align-items: center;
+   justify-content: space-between;
+   padding: 8px 10px;
+
+   img {
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+   }
+
+   p {
+      margin: 0;
+      color: var(--font-primary);
+   }
 }

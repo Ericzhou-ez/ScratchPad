@@ -4,6 +4,7 @@ import TextInput from "./components/TextInput.js";
 import { Themes, ThemeHoverBtns } from "./components/themes.js";
 import Stats from "./components/Stats.js";
 import Sidebar from "./components/SideBar.js";
+import { auth } from "./configs/firebase.js";
 
 export default function App() {
    const [textContent, setTextContent] = useState(0);
@@ -14,6 +15,14 @@ export default function App() {
       return storedTheme ? JSON.parse(storedTheme) : "light";
    });
    const [title, setTitle] = useState('Title');
+   const [currUser, setCurrUser] = useState(null);
+
+   useEffect(() => {
+      const unsubscribe = auth.onAuthStateChanged((user) => {
+         setCurrUser(user);
+      });
+      return unsubscribe;
+   }, []);
 
    useEffect(() => {
       document.body.setAttribute("data-theme", selectedTheme);
@@ -30,7 +39,7 @@ export default function App() {
 
    return (
       <>
-      <Sidebar />
+      <Sidebar currUser={currUser} />
          <div className="Main">
             <Title title={title} handleTitleChange={setTitle} />
             <TextInput

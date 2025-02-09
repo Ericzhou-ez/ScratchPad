@@ -1,4 +1,3 @@
-// TextInput.js
 import React, {
    useState,
    useEffect,
@@ -16,7 +15,6 @@ export default function TextInput({
    handleSetTextContent,
 }) {
    const quillRef = useRef(null);
-   // We'll store the editor contents as a Delta (object) rather than HTML.
    const [editorDelta, setEditorDelta] = useState(null);
 
    const toolbarOptions = React.useMemo(
@@ -41,7 +39,6 @@ export default function TextInput({
       []
    );
 
-   // This helper computes word and character counts from the editor's text.
    const extractWords = useCallback(
       (editorElement) => {
          if (!editorElement) return;
@@ -55,7 +52,6 @@ export default function TextInput({
       [handleSetTextContent, handleSetCharacterCount]
    );
 
-   // Initialize Quill only once.
    useLayoutEffect(() => {
       if (!quillRef.current) {
          const quill = new Quill("#editor", {
@@ -65,11 +61,10 @@ export default function TextInput({
          });
          quillRef.current = quill;
 
-         // Register custom fonts.
          const FontAttributor = Quill.import("attributors/class/font");
          FontAttributor.whitelist = [
-            "oxygenmono",
             "oxygen",
+            "oxygenmono",
             "lexend",
             "newsreader",
             "poppins",
@@ -78,7 +73,6 @@ export default function TextInput({
          ];
          Quill.register(FontAttributor, true);
 
-         // Load any saved Delta from localStorage (if available).
          const savedDelta = localStorage.getItem("textContent");
          if (savedDelta) {
             try {
@@ -86,38 +80,33 @@ export default function TextInput({
                quill.setContents(delta);
                setEditorDelta(delta);
             } catch (e) {
-               console.error("Error parsing saved delta from localStorage:", e);
+               console.error("Error parsing saved delta:", e);
             }
          }
 
-         // Listen for text changes.
          quill.on("text-change", () => {
-            const delta = quill.getContents(); // Get the Delta object.
-            setEditorDelta(delta);
-            localStorage.setItem("textContent", JSON.stringify(delta));
+            const delta = quill.getContents();
+            // Convert delta to a plain object via serialization.
+            const plainDelta = JSON.parse(JSON.stringify(delta));
+            setEditorDelta(plainDelta);
+            localStorage.setItem("textContent", JSON.stringify(plainDelta));
             extractWords(quill.root);
 
-            // Save note to Firestore if the user is signed in.
             const currentUser = auth.currentUser;
             if (currentUser) {
                const noteDocRef = doc(db, "notes", currentUser.uid);
                setDoc(
                   noteDocRef,
-                  { content: delta, updatedAt: new Date() },
+                  { content: plainDelta, updatedAt: new Date() },
                   { merge: true }
-               ).catch((err) =>
-                  console.error("Error saving note to Firestore:", err)
-               );
+               ).catch((err) => console.error("Error saving note:", err));
             }
          });
 
          quill.focus();
       }
-      // We intentionally do not include editorDelta in dependencies so that
-      // the editor isn't re-initialized every time its content changes.
    }, [toolbarOptions, extractWords]);
 
-   // When the authentication state changes, load the user's note from Firestore.
    useEffect(() => {
       const unsubscribe = onAuthStateChanged(auth, async (user) => {
          if (user) {
@@ -127,13 +116,12 @@ export default function TextInput({
                if (docSnap.exists()) {
                   const data = docSnap.data();
                   if (data.content && quillRef.current) {
-                     // data.content is expected to be a Delta object.
                      quillRef.current.setContents(data.content);
                      setEditorDelta(data.content);
                   }
                }
             } catch (err) {
-               console.error("Error loading note from Firestore:", err);
+               console.error("Error loading note:", err);
             }
          }
       });
