@@ -16,7 +16,8 @@ export default function TextInput({
    handleSetTextContent,
 }) {
    const quillRef = useRef(null);
-   const [textContent, setTextContent] = useState("");
+   // We'll store the editor contents as a Delta (object) rather than HTML.
+   const [editorDelta, setEditorDelta] = useState(null);
 
    const toolbarOptions = React.useMemo(
       () => [
@@ -40,6 +41,7 @@ export default function TextInput({
       []
    );
 
+   // This helper computes word and character counts from the editor's text.
    const extractWords = useCallback(
       (editorElement) => {
          if (!editorElement) return;
@@ -53,7 +55,7 @@ export default function TextInput({
       [handleSetTextContent, handleSetCharacterCount]
    );
 
-   // Initialize the Quill editor (runs only once).
+   // Initialize Quill only once.
    useLayoutEffect(() => {
       if (!quillRef.current) {
          const quill = new Quill("#editor", {
@@ -63,6 +65,7 @@ export default function TextInput({
          });
          quillRef.current = quill;
 
+         // Register custom fonts.
          const FontAttributor = Quill.import("attributors/class/font");
          FontAttributor.whitelist = [
             "oxygenmono",
@@ -75,24 +78,32 @@ export default function TextInput({
          ];
          Quill.register(FontAttributor, true);
 
-         // If there’s any preloaded content (from local state), load it.
-         if (textContent) {
-            quill.clipboard.dangerouslyPasteHTML(textContent);
+         // Load any saved Delta from localStorage (if available).
+         const savedDelta = localStorage.getItem("textContent");
+         if (savedDelta) {
+            try {
+               const delta = JSON.parse(savedDelta);
+               quill.setContents(delta);
+               setEditorDelta(delta);
+            } catch (e) {
+               console.error("Error parsing saved delta from localStorage:", e);
+            }
          }
 
+         // Listen for text changes.
          quill.on("text-change", () => {
-            const html = quill.root.innerHTML;
-            setTextContent(html);
-            localStorage.setItem("textContent", JSON.stringify(html));
+            const delta = quill.getContents(); // Get the Delta object.
+            setEditorDelta(delta);
+            localStorage.setItem("textContent", JSON.stringify(delta));
             extractWords(quill.root);
 
-            // Save note to Firestore if a user is signed in.
+            // Save note to Firestore if the user is signed in.
             const currentUser = auth.currentUser;
             if (currentUser) {
                const noteDocRef = doc(db, "notes", currentUser.uid);
                setDoc(
                   noteDocRef,
-                  { content: html, updatedAt: new Date() },
+                  { content: delta, updatedAt: new Date() },
                   { merge: true }
                ).catch((err) =>
                   console.error("Error saving note to Firestore:", err)
@@ -102,11 +113,11 @@ export default function TextInput({
 
          quill.focus();
       }
-      // intentionally do not include textContent in dependencies
-      // so that the editor is not re-initialized on every content change.
+      // We intentionally do not include editorDelta in dependencies so that
+      // the editor isn't re-initialized every time its content changes.
    }, [toolbarOptions, extractWords]);
 
-   // When the auth state changes, load the saved note from Firestore.
+   // When the authentication state changes, load the user's note from Firestore.
    useEffect(() => {
       const unsubscribe = onAuthStateChanged(auth, async (user) => {
          if (user) {
@@ -116,11 +127,9 @@ export default function TextInput({
                if (docSnap.exists()) {
                   const data = docSnap.data();
                   if (data.content && quillRef.current) {
-                     // Use Quill’s clipboard method to paste HTML safely.
-                     quillRef.current.clipboard.dangerouslyPasteHTML(
-                        data.content
-                     );
-                     setTextContent(data.content);
+                     // data.content is expected to be a Delta object.
+                     quillRef.current.setContents(data.content);
+                     setEditorDelta(data.content);
                   }
                }
             } catch (err) {
