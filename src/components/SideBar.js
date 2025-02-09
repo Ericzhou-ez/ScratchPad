@@ -110,7 +110,7 @@ export default function Sidebar() {
 function SidebarTitle({ lockSidebar, isSideBarLocked }) {
    return (
       <div className="sidebarTitle">
-         <h2>Quick Notes</h2>
+         <h2>Scratch Pad</h2>
 
          {isSideBarLocked ? (
             <CaretDoubleLeft

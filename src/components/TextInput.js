@@ -1,16 +1,22 @@
-import React, { useState, useLayoutEffect, useRef, useCallback } from "react";
+// TextInput.js
+import React, {
+   useState,
+   useEffect,
+   useLayoutEffect,
+   useRef,
+   useCallback,
+} from "react";
 import Quill from "quill";
+import { auth, db } from "../configs/firebase";
+import { onAuthStateChanged } from "firebase/auth";
+import { doc, setDoc, getDoc } from "firebase/firestore";
 
-export default function TextInpput({
+export default function TextInput({
    handleSetCharacterCount,
    handleSetTextContent,
 }) {
    const quillRef = useRef(null);
-   const observerRef = useRef(null);
-   const isInitialized = useRef(false);
-   const [textContent, setTextContent] = useState(
-      () => JSON.parse(localStorage.getItem("textContent")) || ""
-   );
+   const [textContent, setTextContent] = useState("");
 
    const toolbarOptions = React.useMemo(
       () => [
@@ -35,32 +41,27 @@ export default function TextInpput({
    );
 
    const extractWords = useCallback(
-      (ele) => {
-         if (!ele) return;
-         const text = ele.innerText || "";
+      (editorElement) => {
+         if (!editorElement) return;
+         const text = editorElement.innerText || "";
          const cleanedText = text.replace(/\n/g, "");
          const words = cleanedText.split(/\s+/).filter(Boolean).length;
-         const characters = cleanedText.split("").length;
+         const characters = cleanedText.length;
          handleSetTextContent(words);
          handleSetCharacterCount(characters);
       },
-      [handleSetCharacterCount, handleSetTextContent]
+      [handleSetTextContent, handleSetCharacterCount]
    );
 
+   // Initialize the Quill editor (runs only once).
    useLayoutEffect(() => {
-      if (!quillRef.current && !isInitialized.current) {
+      if (!quillRef.current) {
          const quill = new Quill("#editor", {
             theme: "snow",
-            modules: {
-               toolbar: toolbarOptions,
-            },
-            placeholder: "Note...", // Add placeholder
+            modules: { toolbar: toolbarOptions },
+            placeholder: "Note...",
          });
-
          quillRef.current = quill;
-         isInitialized.current = true;
-
-         quill.root.innerHTML = textContent;
 
          const FontAttributor = Quill.import("attributors/class/font");
          FontAttributor.whitelist = [
@@ -74,41 +75,61 @@ export default function TextInpput({
          ];
          Quill.register(FontAttributor, true);
 
-         const editorContent = document.querySelector(".ql-editor");
-         observerRef.current = new MutationObserver(() => {
-            const text = editorContent.innerText.trim();
-            setTextContent(text);
-            localStorage.setItem("textContent", JSON.stringify(text));
+         // If there’s any preloaded content (from local state), load it.
+         if (textContent) {
+            quill.clipboard.dangerouslyPasteHTML(textContent);
+         }
+
+         quill.on("text-change", () => {
+            const html = quill.root.innerHTML;
+            setTextContent(html);
+            localStorage.setItem("textContent", JSON.stringify(html));
+            extractWords(quill.root);
+
+            // Save note to Firestore if a user is signed in.
+            const currentUser = auth.currentUser;
+            if (currentUser) {
+               const noteDocRef = doc(db, "notes", currentUser.uid);
+               setDoc(
+                  noteDocRef,
+                  { content: html, updatedAt: new Date() },
+                  { merge: true }
+               ).catch((err) =>
+                  console.error("Error saving note to Firestore:", err)
+               );
+            }
          });
 
-         observerRef.current.observe(editorContent, {
-            childList: true,
-            subtree: true,
-            characterData: true,
-         });
-
-         const editorElement = document.getElementById("editor");
-         const observer = new MutationObserver(() => {
-            extractWords(editorElement);
-         });
-
-         observer.observe(editorElement, {
-            childList: true,
-            subtree: true,
-            characterData: true,
-         });
-
-         // Set focus on the editor
          quill.focus();
       }
+      // intentionally do not include textContent in dependencies
+      // so that the editor is not re-initialized on every content change.
+   }, [toolbarOptions, extractWords]);
 
-      return () => {
-         if (quillRef.current || isInitialized.current) {
-            quillRef.current.off("text-change");
-            isInitialized.current = false;
+   // When the auth state changes, load the saved note from Firestore.
+   useEffect(() => {
+      const unsubscribe = onAuthStateChanged(auth, async (user) => {
+         if (user) {
+            try {
+               const noteDocRef = doc(db, "notes", user.uid);
+               const docSnap = await getDoc(noteDocRef);
+               if (docSnap.exists()) {
+                  const data = docSnap.data();
+                  if (data.content && quillRef.current) {
+                     // Use Quill’s clipboard method to paste HTML safely.
+                     quillRef.current.clipboard.dangerouslyPasteHTML(
+                        data.content
+                     );
+                     setTextContent(data.content);
+                  }
+               }
+            } catch (err) {
+               console.error("Error loading note from Firestore:", err);
+            }
          }
-      };
-   }, [toolbarOptions, textContent, extractWords]);
+      });
+      return unsubscribe;
+   }, []);
 
    return <div id="editor" style={{ minHeight: "80vh" }}></div>;
 }
