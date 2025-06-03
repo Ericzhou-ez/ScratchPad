@@ -9,14 +9,15 @@ import Quill from "quill";
 import { auth, db } from "../configs/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { doc, setDoc, getDoc } from "firebase/firestore";
+import Delta from "quill-delta";
 
 export default function TextInput({
    handleSetCharacterCount,
    handleSetTextContent,
 }) {
    const quillRef = useRef(null);
-   // eslint-disable-next-line no-unused-vars
    const [editorDelta, setEditorDelta] = useState(null);
+   const selectedFontRef = useRef("oxygen");
 
    const toolbarOptions = React.useMemo(
       () => [
@@ -54,13 +55,54 @@ export default function TextInput({
    );
 
    useLayoutEffect(() => {
+      const storedFont = localStorage.getItem("selectedFont") || "oxygen";
+      selectedFontRef.current = storedFont;
+
       if (!quillRef.current) {
          const quill = new Quill("#editor", {
             theme: "snow",
-            modules: { toolbar: toolbarOptions },
+            modules: {
+               toolbar: toolbarOptions,
+               keyboard: {
+                  bindings: {
+                     customEnter: {
+                        key: 13,
+                        handler(range, context) {
+                           quill.insertText(range.index, "\n", {
+                              ...context.format,
+                              font: selectedFontRef.current,
+                           });
+                           quill.setSelection(range.index + 1, 0);
+                           return false;
+                        },
+                     },
+                  },
+               },
+            },
             placeholder: "Note...",
          });
+
          quillRef.current = quill;
+
+         quill.on("selection-change", (range) => {
+            if (range && range.length === 0) {
+               quill.format("font", selectedFontRef.current);
+            }
+         });
+
+         quill.clipboard.addMatcher(Node.ELEMENT_NODE, (node, delta) => {
+            const ops = delta.ops.map((op) => {
+               if (typeof op.insert === "string") {
+                  return {
+                     insert: op.insert,
+                     attributes: { font: selectedFontRef.current },
+                  };
+               }
+               return op;
+            });
+
+            return new Delta(ops);
+         });
 
          const FontAttributor = Quill.import("attributors/class/font");
          FontAttributor.whitelist = [
@@ -74,12 +116,24 @@ export default function TextInput({
          ];
          Quill.register(FontAttributor, true);
 
+         const toolbar = quill.getModule("toolbar");
+         toolbar.addHandler("font", (value) => {
+            const font = value || "oxygen";
+            selectedFontRef.current = font;
+            localStorage.setItem("selectedFont", font);
+            quill.format("font", font);
+            quill.formatText(0, quill.getLength(), "font", font);
+         });
+
          const savedDelta = localStorage.getItem("textContent");
          if (savedDelta) {
             try {
                const delta = JSON.parse(savedDelta);
                quill.setContents(delta);
                setEditorDelta(delta);
+               quill.formatText(0, quill.getLength(), "font", storedFont);
+               quill.format("font", storedFont);
+               extractWords(quill.root);
             } catch (e) {
                console.error("Error parsing saved delta:", e);
             }
@@ -87,11 +141,14 @@ export default function TextInput({
 
          quill.on("text-change", () => {
             const delta = quill.getContents();
-            // Convert delta to a plain object via serialization.
             const plainDelta = JSON.parse(JSON.stringify(delta));
             setEditorDelta(plainDelta);
+
             localStorage.setItem("textContent", JSON.stringify(plainDelta));
             extractWords(quill.root);
+
+            quill.format("font", selectedFontRef.current);
+            quill.formatText(0, quill.getLength(), "font", selectedFontRef.current);
 
             const currentUser = auth.currentUser;
             if (currentUser) {
@@ -105,6 +162,7 @@ export default function TextInput({
          });
 
          quill.focus();
+         quill.format("font", selectedFontRef.current);
       }
    }, [toolbarOptions, extractWords]);
 
@@ -119,6 +177,12 @@ export default function TextInput({
                   if (data.content && quillRef.current) {
                      quillRef.current.setContents(data.content);
                      setEditorDelta(data.content);
+                     quillRef.current.formatText(
+                        0,
+                        quillRef.current.getLength(),
+                        "font",
+                        selectedFontRef.current
+                     );
                   }
                }
             } catch (err) {
