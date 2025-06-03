@@ -148,7 +148,12 @@ export default function TextInput({
             extractWords(quill.root);
 
             quill.format("font", selectedFontRef.current);
-            quill.formatText(0, quill.getLength(), "font", selectedFontRef.current);
+            quill.formatText(
+               0,
+               quill.getLength(),
+               "font",
+               selectedFontRef.current
+            );
 
             const currentUser = auth.currentUser;
             if (currentUser) {
