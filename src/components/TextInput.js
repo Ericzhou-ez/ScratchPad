@@ -16,6 +16,8 @@ export default function TextInput({
    handleSetTextContent,
 }) {
    const quillRef = useRef(null);
+   
+   // eslint-disable-next-line no-unused-vars
    const [editorDelta, setEditorDelta] = useState(null);
    const selectedFontRef = useRef("oxygen");
 
