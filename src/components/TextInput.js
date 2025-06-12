@@ -9,14 +9,13 @@ import Quill from "quill";
 import { auth, db } from "../configs/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { doc, setDoc, getDoc } from "firebase/firestore";
-import Delta from "quill-delta";
 
 export default function TextInput({
    handleSetCharacterCount,
    handleSetTextContent,
 }) {
    const quillRef = useRef(null);
-   
+
    // eslint-disable-next-line no-unused-vars
    const [editorDelta, setEditorDelta] = useState(null);
    const selectedFontRef = useRef("oxygen");
@@ -39,6 +38,7 @@ export default function TextInput({
          ["bold", "italic", "underline"],
          [{ header: 2 }, { header: 3 }],
          [{ list: "ordered" }, { list: "bullet" }, { list: "check" }],
+         ["blockquote", "code-block"],
       ],
       []
    );
@@ -81,7 +81,7 @@ export default function TextInput({
                   },
                },
             },
-            placeholder: "Note...",
+            placeholder: "note...",
          });
 
          quillRef.current = quill;
@@ -92,19 +92,19 @@ export default function TextInput({
             }
          });
 
-         quill.clipboard.addMatcher(Node.ELEMENT_NODE, (node, delta) => {
-            const ops = delta.ops.map((op) => {
-               if (typeof op.insert === "string") {
-                  return {
-                     insert: op.insert,
-                     attributes: { font: selectedFontRef.current },
-                  };
-               }
-               return op;
-            });
+         // quill.clipboard.addMatcher(Node.ELEMENT_NODE, (node, delta) => {
+         //    const ops = delta.ops.map((op) => {
+         //       if (typeof op.insert === "string") {
+         //          return {
+         //             insert: op.insert,
+         //             attributes: { font: selectedFontRef.current },
+         //          };
+         //       }
+         //       return op;
+         //    });
 
-            return new Delta(ops);
-         });
+         //    return new Delta(ops);
+         // });
 
          const FontAttributor = Quill.import("attributors/class/font");
          FontAttributor.whitelist = [

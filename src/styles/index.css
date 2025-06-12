@@ -1,5 +1,6 @@
 :root {
    --background: #ffffff;
+   --background-blur: rgba(256, 256, 256, 0.86);
    --background-secondary: #f4f4f4;
    --font-primary: #000004;
    --font-secondary: #424269;
@@ -12,6 +13,7 @@
 
 [data-theme="light"] {
    --background: #ffffff;
+   --background-blur: rgba(256, 256, 256, 0.86);
    --background-secondary: #f0f3fe;
    --font-primary: #000004;
    --font-secondary: #424269;
@@ -20,6 +22,7 @@
 
 [data-theme="dark"] {
    --background: #1d212d;
+   --background-blur: rgba(29, 33, 45, 0.86);
    --background-secondary: #505050;
    --font-primary: #fefefe;
    --font-secondary: #dfc2e3;
@@ -27,7 +30,8 @@
 }
 
 [data-theme="marina"] {
-   --background: #0f092e;
+   --background: rgb(6, 3, 23);
+   --background-blur: rgba(6, 3, 23, 0.82);
    --background-secondary: #153343;
    --font-primary: #ffffff;
    --font-secondary: #f2ce83;
@@ -36,6 +40,7 @@
 
 [data-theme="paper"] {
    --background: #fffae6;
+   --background-blur: rgba(255, 250, 230, 0.86);
    --background-secondary: #f9f2d5;
    --font-primary: #444444;
    --font-secondary: #da6221;
@@ -44,6 +49,7 @@
 
 [data-theme="blueberry"] {
    --background: #f4f3ff;
+   --background-blur: rgba(244, 243, 255, 0.8);
    --background-secondary: #e2dffb;
    --font-primary: #506477;
    --font-secondary: #2c326d;
@@ -52,6 +58,7 @@
 
 [data-theme="shadow"] {
    --background: #130000;
+   --background-blur: rgba(19, 0, 0, 0.8);
    --background-secondary: #393939;
    --font-primary: #eeeeee;
    --font-secondary: #bce087;
@@ -70,11 +77,36 @@ img {
 }
 
 #title {
-   padding: 10px 16px;
+   padding: 5px 16px;
    color: var(--font-secondary);
-   font-size: 2.5rem;
+   font-size: 40px;
    font-weight: bolder;
    letter-spacing: 0.04rem;
+   position: sticky;
+   top: 0;
+   z-index: 100;
+   max-height: 66.8px;
+   overflow-y: auto;
+
+   -ms-overflow-style: none;
+   scrollbar-width: none;
+
+   background-color: var(--background-blur);
+   backdrop-filter: blur(10px);
+   -webkit-backdrop-filter: blur(10px);
+
+   transition: all 0.3s ease-in-out;
+}
+
+.ql-toolbar {
+   position: sticky;
+   top: 66.8px;
+   z-index: 100;
+   background-color: var(--background-blur);
+   backdrop-filter: blur(10px);
+   -webkit-backdrop-filter: blur(10px);
+
+   transition: all 0.3s ease-in-out;
 }
 
 h2 {
@@ -354,10 +386,6 @@ svg {
    display: flex;
    flex-direction: column;
    justify-content: space-between;
-
-   -webkit-box-shadow: var(--highlight) 0 1px 4px;
-   -moz-box-shadow: var(--highlight) 0 1px 4px;
-   box-shadow: var(--highlight) 0 1px 4px;
    /* Start at 20% visible => translateX(-80%) (80% offscreen) */
    transform: translateX(-80%);
    transition: transform 0.4s ease-in-out;
@@ -414,10 +442,6 @@ svg {
    display: flex;
    flex-direction: column;
    justify-content: space-between;
-
-   -webkit-box-shadow: var(--highlight) 0 1px 10px;
-   -moz-box-shadow: var(--highlight) 0 1px 10px;
-   box-shadow: var(--highlight) 0 1px 10px;
 
    .sidebarTitle {
       margin-top: 30px;

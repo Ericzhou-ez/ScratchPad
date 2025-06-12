@@ -1,0 +1,29 @@
+.back-to-top {
+   position: fixed;
+   bottom: 18px;
+   left: 18px;
+   background-color: var(--background-blur);
+   backdrop-filter: blur(10px);
+   -webkit-backdrop-filter: blur(10px);
+
+   -webkit-box-shadow: rgba(0, 0, 0, 0.3) 0 1px 5px;
+   -moz-box-shadow: rgba(0, 0, 0, 0.3) 0 1px 5px;
+   box-shadow: rgba(0, 0, 0, 0.3) 0 1px 5px;
+   color: var(--font-primary);
+   border: none;
+   border-radius: 50%;
+   width: 40px;
+   height: 40px;
+
+   cursor: pointer;
+   transition: all 0.2s ease-in-out;
+   z-index: 100;
+
+   display: flex;
+   align-items: center;
+   justify-content: center;
+}
+
+.back-to-top svg {
+   margin: 0 !important;
+}

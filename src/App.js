@@ -4,6 +4,7 @@ import TextInput from "./components/TextInput.js";
 import { Themes, ThemeHoverBtns } from "./components/themes.js";
 import Stats from "./components/Stats.js";
 import Sidebar from "./components/SideBar.js";
+import BackToTop from "./components/BackToTop.js";
 import { auth } from "./configs/firebase.js";
 
 export default function App() {
@@ -14,7 +15,7 @@ export default function App() {
       const storedTheme = localStorage.getItem("selectedTheme");
       return storedTheme ? JSON.parse(storedTheme) : "light";
    });
-   const [title, setTitle] = useState('Title');
+   const [title, setTitle] = useState("Title");
    const [currUser, setCurrUser] = useState(null);
 
    useEffect(() => {
@@ -39,7 +40,7 @@ export default function App() {
 
    return (
       <>
-      <Sidebar currUser={currUser} />
+         <Sidebar currUser={currUser} />
          <div className="Main">
             <Title title={title} handleTitleChange={setTitle} />
             <TextInput
@@ -64,6 +65,7 @@ export default function App() {
                )}
             </div>
          </div>
+         <BackToTop />
       </>
    );
 }
